@@ -764,7 +764,7 @@ def LoadShop():
 LoadShop()
 
 def LoadDevice():
-    journals = csv.reader(open('libro_estados.csv', 'r'))
+    journals = csv.reader(open('tpv.csv', 'r'))
     header=True
     inicio=1
     
@@ -774,19 +774,35 @@ def LoadDevice():
         
     for index,row in enumerate(journals):
         device = Device()
-        device.name = row[1]
+        device.name = row[0]
         terminal = row[1]
-        if len(Shop.find([('name', '=', 'TIENDA MATRIZ')])) == 1:
-            shop, = Shop.find([('name', '=', 'TIENDA MATRIZ')])
+        if len(Shop.find([('name', '=', terminal)])) == 1:
+            shop, = Shop.find([('name', '=', terminal)])
             device.shop = shop
-        device.save()
-        devices = Device.find([('name','=',terminal)])
-        journals = JournalStatement.find([('name','=',row[0])])
-        for device in devices:
-            device.journals.append(journals[0])
         device.save()
         print "Created device ", device
 LoadDevice()
+
+def LoadDeviceJ():
+    journals = csv.reader(open('libro_estados.csv', 'r'))
+    header=True
+    inicio=1
+    
+    if (inicio == 1): inicio = 2 
+    for i in range(inicio - 1):
+        journals.next()
+        
+    for index,row in enumerate(journals):
+        terminal = row[1]
+        journal = row[0]
+        devices = Device.find([('name','=',terminal)])
+        journals = JournalStatement.find([('name','=',journal)])
+        for device in devices:
+            device.journals.append(journals[0])
+            device.save()
+        print "Modified device ", device
+        
+LoadDeviceJ()
 
 def LoadShop_User():
     shop = Shop()
@@ -801,7 +817,7 @@ def LoadShop_User():
 LoadShop_User()          
 
 
-def LoadUser_Shop():
+def LoadShop_User():
     shop = Shop()
     shop, = Shop.find([('name', '=', 'TIENDA MATRIZ')])
     device, = Device.find([('name', '=', 'TPV1')])
@@ -817,7 +833,7 @@ def LoadUser_Shop():
             user[0].sale_device = device
         user[0].save()
         print "Modified ", user[0]
-LoadUser_Shop()  
+LoadShop_User()  
 
 
 def LoadSequence():
