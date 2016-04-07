@@ -29,61 +29,19 @@ company_context = '1191758435001'
 
 def InitDatabase ():
     Module = Model.get('ir.module.module')
-    #party
-    (party,) = Module.find([('name', '=', 'party')])
-    Module.install([party.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #company
-    (company,) = Module.find([('name', '=', 'company')])
-    Module.install([company.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #account
-    (account,) = Module.find([('name', '=', 'account')])
-    Module.install([account.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #currency
-    (currency,) = Module.find([('name', '=', 'currency')])
-    Module.install([currency.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #bank
-    (bank,) = Module.find([('name', '=', 'bank')])
-    Module.install([bank.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #sale
-    (sale,) = Module.find([('name', '=', 'sale')])
-    Module.install([sale.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #stock
-    (stock,) = Module.find([('name', '=', 'stock')])
-    Module.install([stock.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #nodux_account_niif_ec
-    (nodux_account_niif_ec,) = Module.find([('name', '=', 'nodux_account_niif_ec')])
-    Module.install([nodux_account_niif_ec.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade') 
-    #product
-    (product,) = Module.find([('name', '=', 'product')])
-    Module.install([product.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #stock
-    (stock,) = Module.find([('name', '=', 'stock')])
-    Module.install([stock.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #sale_payment
-    (sale_payment,) = Module.find([('name', '=', 'sale_payment')])
-    Module.install([sale_payment.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #sale_pos
-    (sale_pos,) = Module.find([('name', '=', 'sale_pos')])
-    Module.install([sale_pos.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-    #nodux_account_invoice_multisequence
-    (nodux_account_invoice_multisequence,) = Module.find([('name', '=', 'nodux_account_invoice_multisequence')])
-    Module.install([nodux_account_invoice_multisequence.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
+    inicio=4
     
-    print "Installing modules"
-InitDatabase()
+    for i in range(inicio - 1):
+        modules.next()
+
+    for index,row in enumerate(modules):
+        print row[0]
+        name = row[0]
+        (module,) = Module.find([('name', '=', name)])
+        Module.install([module.id], config.context)
+        Wizard('ir.module.module.install_upgrade').execute('upgrade')
+        print "Installing ", name
+InitDatabase ()
 
 Party = Model.get('party.party')
 Address = Model.get ('party.address')

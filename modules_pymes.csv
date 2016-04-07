@@ -14,7 +14,7 @@ currency,core
 nodux_account_ec_pymes,nodux
 nodux_account_invoice_multisequence,nodux
 nodux_account_niif_ec,nodux
-nodux_party_ec,nodux
+nodux_account_statement,nodux
 nodux_sale_payment,nodux
 nodux_sale_pos,nodux
 party,core
