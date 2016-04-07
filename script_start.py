@@ -17,10 +17,11 @@ categories = csv.reader(open('sub_categorias.csv', 'r'))
 modules = csv.reader(open('modules_pymes.csv', 'r'))
 
 
-database = 'database_name'
-user = 'nodux_admin_user'
-password = 'nodux_admin_password'
+database = 'nodux_database_name'
+user = 'nodux_database_user'
+password = 'nodux_database_password'
 config_file = 'path_to_file_nodux_config'
+
 config = config.set_trytond(database=database, user=user, language='es_EC.UTF-8', password=password, config_file=config_file)
 
 #variable para asignar empresa a contexto
@@ -134,11 +135,11 @@ def LoadPartieC():
         party.type_document = tipo
         party.vat_number = row[0]
         party.active = True
-        Calle = row[3]
-        Ciudad = row[5]
-        Pais = row[4]
-        Telefono = row[2]
-        Correo = "etqm25@gmail.com"
+        Calle = row[4]
+        Ciudad = row[6]
+        Pais = row[5]
+        Telefono = row[3]
+        Correo = "hola@nodux.ec"
         party.addresses.pop()
         (coun,) = Country.find([('code', '=', 'EC')])
         address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
@@ -286,10 +287,10 @@ def LoadParties ():
         party.type_document = tipo
         party.vat_number = row[0]
         party.active = True
-        Calle = row[3]
-        Ciudad = row[5]
-        Pais = row[4]
-        Telefono = row[2]
+        Calle = row[4]
+        Ciudad = row[6]
+        Pais = row[5]
+        Telefono = row[3]
         Correo = "etqm25@gmail.com"
         party.addresses.pop()
         (coun,) = Country.find([('code', '=', 'EC')])
