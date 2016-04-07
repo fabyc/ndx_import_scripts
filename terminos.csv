@@ -1,0 +1,6 @@
+Nombre,tipo,dias,meses,semana,,,,
+AL CONTADO,remainder,0,0,0,,,,
+PAGO A 30 DIAS,remainder,30,0,0,,,,
+PAGO A 45 DIAS,remainder,45,0,0,,,,
+50% HOY - 50% EN 30 DIAS,percent_on_total,0,0,0,remainder,30,0,0
+20% HOY - 25% EN 15 DIAS - 25% EN 30 DIAS - 30% EN 40 DIAS,,,,,,,,
