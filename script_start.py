@@ -17,9 +17,9 @@ categories = csv.reader(open('sub_categorias.csv', 'r'))
 modules = csv.reader(open('modules_pymes.csv', 'r'))
 
 
-database = 'nodux_database_name'
-user = 'nodux_database_user'
-password = 'nodux_database_password'
+database = 'database_name'
+user = 'nodux_admin_user'
+password = 'nodux_admin_password'
 config_file = 'path_to_file_nodux_config'
 
 config = config.set_trytond(database=database, user=user, language='es_EC.UTF-8', password=password, config_file=config_file)
@@ -71,6 +71,7 @@ Group = Model.get('res.group')
 Ir = Model.get('ir.model')
 User= Model.get('res.user')
 Field = Model.get('ir.model.field')
+SaleStatement = Model.get('sale.device.account.statement.journal')
 
 def LoadPartieC():
 
@@ -112,7 +113,7 @@ def LoadPartieC():
         print "Created party-company ", party
 LoadPartieC()
 
-def LoadCompanys ():
+def LoadCompanies ():
 
     Company = Model.get('company.company')
     header=True
@@ -135,7 +136,7 @@ def LoadCompanys ():
         
         company.save()
         print "Created company ", company
-LoadCompanys()
+LoadCompanies()
 
 def LoadUserC():
     inicio=1
@@ -205,6 +206,7 @@ def LoadPlanNIIF():
 LoadPlanNIIF()
 
 def AccountConfiguration():
+    print "Load account configuration "
     Account = Model.get('account.account')
     AccountConfiguration = Model.get('account.configuration')
     account_configuration = AccountConfiguration()
@@ -249,7 +251,7 @@ def LoadParties ():
         Ciudad = row[6]
         Pais = row[5]
         Telefono = row[3]
-        Correo = "etqm25@gmail.com"
+        Correo = "hola@nodux.ec"
         party.addresses.pop()
         (coun,) = Country.find([('code', '=', 'EC')])
         address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
@@ -318,6 +320,7 @@ def LoadUserEmployee():
             
         for user in users:
             user.employees.append(employees[0])
+            user.employee = employee
         user.save()
 
 LoadUserEmployee()
@@ -717,6 +720,8 @@ def LoadShop():
         shop.party = party
         
     shop.self_pick_up = True
+    shop.enough_stock_qty = 'quantity'
+    shop.enough_stock = True
     shop.save()
     print "Created shop ", shop
 
@@ -756,9 +761,11 @@ def LoadDeviceJ():
         journal = row[0]
         devices = Device.find([('name','=',terminal)])
         journals = JournalStatement.find([('name','=',journal)])
+        
         for device in devices:
             device.journals.append(journals[0])
             device.save()
+        
         print "Modified device ", device
         
 LoadDeviceJ()
