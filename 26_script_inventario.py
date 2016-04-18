@@ -1,6 +1,7 @@
 import csv
 from proteus import config, Model, Wizard
 from datetime import datetime, timedelta
+import pytz
 
 database = 'database_name'
 user = 'nodux_admin_user'
@@ -18,11 +19,14 @@ Location = Model.get('stock.location')
 InventoryLines = Model.get('stock.inventory.line')
 
 def LoadInventory():
-    today = datetime.today()
+    timezone = pytz.timezone('America/Guayaquil')
+    dt = datetime.today()
+    fecha = datetime.astimezone(dt.replace(tzinfo=pytz.utc), timezone)
+            
     inventory = Inventory()
     location = Location.find([('type', '=', 'storage')])
     inventory.location = location[0]
-    inventory.date = today
+    inventory.date = fecha
     lost_found, = Location.find([('type', '=', 'lost_found')])
     inventory.lost_found = lost_found
     products = csv.reader(open('productos.csv', 'r'))
