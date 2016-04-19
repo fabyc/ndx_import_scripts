@@ -1,6 +1,5 @@
 import csv
 from proteus import config, Model, Wizard
-
 parties = csv.reader(open('terceros.csv', 'r'))
 
 database = 'database_name'
@@ -32,29 +31,36 @@ def LoadParties ():
 
     for index,row in enumerate(parties):
         party = Party()
-        if row[2]:
-            tipo = '0'+str(row[2])
+        
+        if len(Party.find([('vat_number', '=', row[0])])) >= 1:
+            f = open('terceros_duplicados.csv', 'a')
+            obj = csv.writer(f, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            obj.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6]])
+            f.close()
         else:
-            tipo = ''
-        party.name = row[1]
-        party.type_document = tipo
-        party.vat_number = row[0]
-        party.active = True
-        Calle = row[4]
-        Ciudad = row[6]
-        Pais = row[5]
-        Telefono = row[3]
-        Correo = "hola@nodux.ec"
-        party.addresses.pop()
-        (coun,) = Country.find([('code', '=', 'EC')])
-        address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
-        (es,) = Lang.find([('code', '=', 'es_EC')])
-        party.lang = es
+            if row[2]:
+                tipo = '0'+str(row[2])
+            else:
+                tipo = ''
+            party.name = row[1]
+            party.type_document = tipo
+            party.vat_number = row[0]
+            party.active = True
+            Calle = row[4]
+            Ciudad = row[6]
+            Pais = row[5]
+            Telefono = row[3]
+            Correo = "hola@nodux.ec"
+            party.addresses.pop()
+            (coun,) = Country.find([('code', '=', 'EC')])
+            address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
+            (es,) = Lang.find([('code', '=', 'es_EC')])
+            party.lang = es
 
-        if (Telefono != ''):
-            contactmecanism = party.contact_mechanisms.new(type='phone', value=Telefono)
-        if (Correo != ''):
-            contactmecanism = party.contact_mechanisms.new(type='email', value=Correo)
-        party.save()
-        print "Created party ", party
+            if (Telefono != ''):
+                contactmecanism = party.contact_mechanisms.new(type='phone', value=Telefono)
+            if (Correo != ''):
+                contactmecanism = party.contact_mechanisms.new(type='email', value=Correo)
+            party.save()
+            print "Created party ", party, party.name
 LoadParties()
