@@ -77,10 +77,8 @@ def LoadPartieC():
 
     Party = Model.get('party.party')
     parties = csv.reader(open('empresas.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         parties.next()
 
@@ -116,10 +114,8 @@ LoadPartieC()
 def LoadCompanies ():
 
     Company = Model.get('company.company')
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2
     for i in range(inicio - 1):
         empresas.next()
 
@@ -139,7 +135,6 @@ def LoadCompanies ():
 LoadCompanies()
 
 def LoadUserC():
-    inicio=1
     User = Model.get('res.user')
     Company = Model.get('company.company')
     empresa = '1191758435001'
@@ -162,10 +157,8 @@ def LoadUser():
 
     User = Model.get('res.user')
     users = csv.reader(open('usuarios.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         users.next()
 
@@ -230,49 +223,53 @@ def LoadParties ():
 
     Party = Model.get('party.party')
     parties = csv.reader(open('terceros.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         parties.next()
 
     for index,row in enumerate(parties):
         party = Party()
-        if row[2]:
-            tipo = '0'+str(row[2])
+        
+        if len(Party.find([('vat_number', '=', row[0])])) >= 1:
+            f = open('terceros_duplicados.csv', 'a')
+            obj = csv.writer(f, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            obj.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6]])
+            f.close()
         else:
-            tipo = ''
-        party.name = row[1]
-        party.type_document = tipo
-        party.vat_number = row[0]
-        party.active = True
-        Calle = row[4]
-        Ciudad = row[6]
-        Pais = row[5]
-        Telefono = row[3]
-        Correo = "hola@nodux.ec"
-        party.addresses.pop()
-        (coun,) = Country.find([('code', '=', 'EC')])
-        address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
-        (es,) = Lang.find([('code', '=', 'es_EC')])
-        party.lang = es
+            if row[2]:
+                tipo = '0'+str(row[2])
+            else:
+                tipo = ''
+            party.name = row[1]
+            party.type_document = tipo
+            party.vat_number = row[0]
+            party.active = True
+            Calle = row[4]
+            Ciudad = row[6]
+            Pais = row[5]
+            Telefono = row[3]
+            Correo = "hola@nodux.ec"
+            party.addresses.pop()
+            (coun,) = Country.find([('code', '=', 'EC')])
+            address = party.addresses.new(street=Calle, country=coun,city=Ciudad)
+            (es,) = Lang.find([('code', '=', 'es_EC')])
+            party.lang = es
 
-        if (Telefono != ''):
-            contactmecanism = party.contact_mechanisms.new(type='phone', value=Telefono)
-        if (Correo != ''):
-            contactmecanism = party.contact_mechanisms.new(type='email', value=Correo)
-        party.save()
-        print "Created party ", party
+            if (Telefono != ''):
+                contactmecanism = party.contact_mechanisms.new(type='phone', value=Telefono)
+            if (Correo != ''):
+                contactmecanism = party.contact_mechanisms.new(type='email', value=Correo)
+            party.save()
+            print "Created party ", party, party.name
 LoadParties()
+
 def LoadEmployes ():
 
     Employe = Model.get('company.employee')
     employe = Employe()
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         empleados.next()
 
@@ -297,11 +294,9 @@ def LoadUserEmployee():
     User = Model.get('res.user')
     Employe = Model.get('company.employee')
     users = csv.reader(open('usuarios.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     user = User()
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         users.next()
 
@@ -359,10 +354,8 @@ LoadCategoryG()
 def LoadCategory():
     Account = Model.get('account.account')
     Tax = Model.get('account.tax')
-    header=True
-    inicio=1
+    inicio=2
     categories_csv = csv.reader(open('sub_categorias.csv', 'r'))
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         categories_csv.next()
 
@@ -408,86 +401,88 @@ LoadCategory()
 def LoadProduct ():
 
     products = csv.reader(open('productos.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
     Product = Model.get('product.product')
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         products.next()
 
     for index,row in enumerate(products):
         pt = ProductTemplate()
         product = Product()
-        #Lprovedor = row[2]
-        pt.name = row[1]
-        nombreproducto=row[1]
-        Codigo=row[0]
-        tipo = row[5]
-        Categoria = row[6]
-        UnidadDefault=unit
-        UnidadCompra=unit
-        UnidadVenta=unit
-        Pcosto= row[3]
-        Lcosto = row[4]
-        comprable= '1'
-        vendible= '1'
-        cuentaporcategoria = '1'
-        Descripcion=''
-        pt.iva_category = True
-        costo = float(Pcosto.replace(',', '.')) #Me Convierte la , en . como separador decimal
-        venta = float(Lcosto.replace(',', '.')) 
-        pt.cost_price = Decimal(costo).quantize(Decimal('.001')) #Redondeo
-        pt.list_price = Decimal(venta).quantize(Decimal('.001')) #Redondeo
-        if len(Category.find([('name', '=', Categoria)])) == 1:
-            category, = Category.find([('name', '=', Categoria)])
-            pt.category = category
-
-     	pt.default_uom = unit
-
-        if tipo != '':
-            if tipo == 'Articulo':
-                 pt.type = 'goods'
-            if tipo == 'Servicios':
-                 pt.type = 'service'
-
-        if comprable == '1':
-            if comprable == '1':
-                pt.purchasable = True
-	    else:
-	        pt.purchasable = False
-	        
-	    if vendible == '1':
-	        pt.salable = True
-	    else:
-	        pt.salable = False
-
-        if (comprable=='0' and vendible=='0' and cuentaporcategoria=='0'):
-            pt.account_category = False
-        else:
-            pt.account_category = True
-
-        pt.taxes_category = True
-
-        pt.save()
         
-        if len(product.find([('name', '=',nombreproducto)])) == 1:
-	        pd, = product.find([('name', '=',nombreproducto)])
-	        pd.description = Descripcion
-	        pd.code=Codigo
-       
-        pd.save()
-        print "Created product ", pd
+        if len(ProductTemplate.find([('name', '=', row[1])])) >= 1:
+            f = open('productos_duplicados.csv', 'a')
+            obj = csv.writer(f, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            obj.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6]])
+            f.close()
+        else:    
+            pt.name = row[1]
+            nombreproducto=row[1]
+            Codigo=row[0]
+            tipo = row[5]
+            Categoria = row[6]
+            UnidadDefault=unit
+            UnidadCompra=unit
+            UnidadVenta=unit
+            Pcosto= row[3]
+            Lcosto = row[4]
+            comprable= '1'
+            vendible= '1'
+            cuentaporcategoria = '1'
+            Descripcion=''
+            pt.iva_category = True
+            costo = float(Pcosto.replace(',', '.')) #Me Convierte la , en . como separador decimal
+            venta = float(Lcosto.replace(',', '.')) 
+            pt.cost_price = Decimal(costo).quantize(Decimal('.001')) #Redondeo
+            pt.list_price = Decimal(venta).quantize(Decimal('.001')) #Redondeo
+            if len(Category.find([('name', '=', Categoria)])) == 1:
+                category, = Category.find([('name', '=', Categoria)])
+                pt.category = category
+
+         	pt.default_uom = unit
+
+            if tipo != '':
+                if tipo == 'Articulo':
+                     pt.type = 'goods'
+                if tipo == 'Servicios':
+                     pt.type = 'service'
+
+            if comprable == '1':
+                if comprable == '1':
+                    pt.purchasable = True
+	        else:
+	            pt.purchasable = False
+	            
+	        if vendible == '1':
+	            pt.salable = True
+	        else:
+	            pt.salable = False
+
+            if (comprable=='0' and vendible=='0' and cuentaporcategoria=='0'):
+                pt.account_category = False
+            else:
+                pt.account_category = True
+
+            pt.taxes_category = True
+
+            pt.save()
+            
+            if len(product.find([('name', '=',nombreproducto)])) == 1:
+	            pd, = product.find([('name', '=',nombreproducto)])
+	            pd.description = Descripcion
+	            pd.code=Codigo
+           
+            pd.save()
+            print "Created product ", pd, pt.name
 LoadProduct()
 
 def LoadLocation():
 
     Locations = Model.get('stock.location')
     locations = csv.reader(open('bodegas.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         locations.next()
 
@@ -516,14 +511,12 @@ LoadLocation()
 def ListPrice():
     PriceList = Model.get('product.price_list')
     price_list = csv.reader(open('lista_precios.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     empresa = '1191758435001'
     if len(Company.find([('party.vat_number', '=', empresa)])) == 1:
         company, = Company.find([('party.vat_number', '=', empresa)])
         company = company
         
-    if (inicio == 1): inicio = 2
     for i in range(inicio - 1):
         price_list.next()
 
@@ -547,10 +540,8 @@ ListPrice()
 
 def Term():
     terms = csv.reader(open('terminos.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         terms.next()
 
@@ -675,9 +666,8 @@ LoadJournal()
         
 def LoadJournalStatement():
     journals_s = csv.reader(open('libro_estados.csv', 'r'))
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         journals_s.next()
 
@@ -694,8 +684,6 @@ def LoadJournalStatement():
 LoadJournalStatement()
 
 def LoadShop():
-    header=True
-    inicio=1
     shop= Shop()
     shop.name = "TIENDA MATRIZ"
     empresa = '1191758435001'
@@ -729,10 +717,8 @@ LoadShop()
 
 def LoadDevice():
     journals = csv.reader(open('tpv.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         journals.next()
         
@@ -749,10 +735,8 @@ LoadDevice()
 
 def LoadDeviceJ():
     journals = csv.reader(open('libro_estados.csv', 'r'))
-    header=True
-    inicio=1
+    inicio=2
     
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         journals.next()
         
@@ -817,10 +801,8 @@ LoadSequence()
 
 def LoadSequenceStrict():
     SequenceStrict = Model.get('ir.sequence.strict')
-    header=True
-    inicio=1
+    inicio=2
     secuencia_comprobantes = csv.reader(open('secuencia_comprobantes.csv', 'r'))
-    if (inicio == 1): inicio = 2 
     for i in range(inicio - 1):
         secuencia_comprobantes.next()
         
