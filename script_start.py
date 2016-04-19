@@ -1192,4 +1192,11 @@ def LoadSolicitudCompras():
         group.save()
 LoadSolicitudCompras()
 
-
+def LoadECuenta():
+    usuario = 'CONTADOR'
+    groups = Group.find([('name','=', 'Estado de cuenta')])
+    users = User.find([('name','=', usuario)])
+    for group in groups:
+        group.users.append(users[0])
+        group.save()
+LoadECuenta()
