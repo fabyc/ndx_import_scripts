@@ -28,22 +28,22 @@ def LoadPrecio ():
     products = csv.reader(open('productos.csv', 'r'))
     header=True
     inicio=1
-    
+
     Product = Model.get('product.product')
-    if (inicio == 1): inicio = 2 
+    if (inicio == 1): inicio = 2
     for i in range(inicio - 1):
         products.next()
 
     for index,row in enumerate(products):
-        
+
         if len(ProductTemplate.find([('name', '=', row[1])])) == 1:
             pt, = ProductTemplate.find([('name', '=',row[1])])
             Pcosto= row[3]
             Lcosto = row[4]
             costo = float(Pcosto.replace(',', '.')) #Me Convierte la , en . como separador decimal
-            venta = float(Lcosto.replace(',', '.')) 
+            venta = float(Lcosto.replace(',', '.'))
             pt.cost_price = Decimal(costo).quantize(Decimal('.001')) #Redondeo
             pt.list_price = Decimal(venta).quantize(Decimal('.001')) #Redondeo
-            pt.save()                    
-            print "Modified product", pt, pt.name
+            pt.save()
+            print "Modified product ", pt, pt.name
 LoadPrecio()
