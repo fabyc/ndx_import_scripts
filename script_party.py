@@ -2,22 +2,19 @@ import csv
 from proteus import config, Model, Wizard
 
 parties = csv.reader(open('clientes.csv', 'r'))
-config = config.set_trytond(database='toners_catamayo', user='admin', language='es_EC.UTF-8', password='toners_catamayo', config_file='/home/noduxdev/.noduxenvs/nodux34devpymes/etc/nodux34pymes-server.conf')
-print "Terceros ",parties
+database = 'prueba_one'
+user = 'admin'
+password = 'admNdX58753'
+config_file = '/home/noduxdev/.noduxenvs/nodux34devpymes/etc/nodux34pymes-server.conf'
+
+config = config.set_trytond(database=database, user=user, language='es_EC.UTF-8', password=password, config_file=config_file)
+
 Party = Model.get('party.party')
 Category = Model.get('party.category')
 Address = Model.get ('party.address')
 Contact = Model.get ('party.contact_mechanism')
 Country = Model.get('country.country')
 Lang = Model.get('ir.lang')
-
-def InitDatabase ():
-    Module = Model.get('ir.module.module')
-    (party,) = Module.find([('name', '=', 'party')])
-    Module.install([party.id], config.context)
-    Wizard('ir.module.module.install_upgrade').execute('upgrade')
-
-InitDatabase()
 
 def LoadParties ():
 
