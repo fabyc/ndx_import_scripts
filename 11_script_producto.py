@@ -19,8 +19,8 @@ config = config.set_trytond(database=database, user=user, language='es_EC.UTF-8'
 Product = Model.get('product.product')
 Template = Model.get('product.template')
 Category = Model.get('product.category')
-ListPrice = Model.get('product.list_by_product')
-PriceList =  Model.get('product.price_list')
+#ListPrice = Model.get('product.list_by_product')
+#PriceList =  Model.get('product.price_list')
 ProductUom = Model.get('product.uom')
 ProductSupplier = Model.get('purchase.product_supplier')
 unit, = ProductUom.find([('symbol', '=', 'u')])
@@ -28,7 +28,7 @@ Brand = Model.get('product.brand')
 
 def LoadProduct ():
 
-    products = csv.reader(open('productos.csv', 'r'))
+    products = csv.reader(open('productos-tecnycompsa.csv', 'r'))
     header=True
     inicio=1
 
@@ -37,30 +37,27 @@ def LoadProduct ():
     if (inicio == 1): inicio = 2
     for i in range(inicio - 1):
         products.next()
-
     for index,row in enumerate(products):
         product = Product()
-        if len(Template.find([('name', '=', row[1])])) >= 1:
-            print "Duplicado ", row[1]
+        if len(Template.find([('name', '=', row[2])])) >= 1:
+            print "Duplicado ", row[2]
             f = open('productos_duplicados.csv', 'a')
             obj = csv.writer(f, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             obj.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6]])
             f.close()
         else:
             pt = Template()
-            pt.name = row[1]
+            pt.name = row[2]
 
-            nombreproducto = row[1]
+            nombreproducto = row[2]
             Codigo=row[0]
-            tipo = row[5]
-            Categoria = row[6]
+            tipo = row[6]
+            Categoria = row[7]
             UnidadDefault=unit
             UnidadCompra=unit
             UnidadVenta=unit
-            Pcosto= row[3]
-            Lcosto = row[4]
-            comprable= '1'
-            vendible= '1'
+            Pcosto= row[4]
+            Lcosto = row[5]
             cuentaporcategoria = '1'
             Descripcion=''
             pt.iva_category = True
@@ -71,13 +68,12 @@ def LoadProduct ():
             if len(Category.find([('name', '=', Categoria)])) == 1:
                 category, = Category.find([('name', '=', Categoria)])
                 pt.category = category
-
-            if len(Brand.find([('name', '=', row[10])])) == 1:
-                brand, = Brand.find([('name', '=', row[10])])
-                pt.brand = brand
-
             
-         	pt.default_uom = unit
+            if len(Brand.find([('name', '=', row[8])])) == 1:
+                brand, = Brand.find([('name', '=', row[8])])
+                pt.brand = brand
+            
+            pt.default_uom = unit
 
             if tipo != '':
                 if tipo == 'Articulo':
@@ -85,22 +81,11 @@ def LoadProduct ():
                 if tipo == 'Servicios':
                      pt.type = 'service'
 
-            if comprable == '1':
-                pt.purchasable = True
-            else:
-                pt.purchasable = False
-
-	        if vendible == '1':
-	            pt.salable = True
-	        else:
-	            pt.salable = False
-
-            if (comprable=='0' and vendible=='0' and cuentaporcategoria=='0'):
-                pt.account_category = False
-            else:
-                pt.account_category = True
-
+            pt.purchasable = True
+            pt.salable = True
+            pt.account_category = True
             pt.taxes_category = True
+            pt.save()
 
             if pt.list_price == Decimal(0.0):
                 pt.list_price_with_tax = Decimal(0.0)
@@ -124,7 +109,7 @@ def LoadProduct ():
 	                pd.description = Descripcion
 	                pd.code=Codigo
                 pd.save()
-
+            """
             priceslist = PriceList.find([('incluir_lista', '=', True)])
             for price in priceslist:
                 percentage = 0
@@ -196,5 +181,7 @@ def LoadProduct ():
                     pt.listas_precios.append(list_by_product)
 
                 pt.save()
+            """
+            pt.save
             print "Created product ", pt, pt.name
 LoadProduct()
